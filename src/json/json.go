@@ -44,7 +44,7 @@ func main() {
 	json.Unmarshal(data, &book)
 	fmt.Println(book)
 
-	// 用interface解码json字符串
+	// 在不确定类型时，用interface{}解码json字符串
 	var r interface{}
 	json.Unmarshal(data, &r)
 	fmt.Println(reflect.TypeOf(r))
