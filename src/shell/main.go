@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"io"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -20,7 +21,7 @@ func asyncLog(reader io.ReadCloser) error {
 			b := buf[:num]
 			s := strings.Split(string(b), "\n")
 			line := strings.Join(s[:len(s)-1], "\n") //取出整行的日志
-			fmt.Printf("这是go程序里的获取到的日志：%s%s\n", cache, line)
+			logrus.Infof("这是go程序里的获取到的日志：%s%s\n", cache, line)
 			cache = s[len(s)-1]
 		}
 	}
@@ -50,5 +51,14 @@ func execute() error {
 }
 
 func main() {
+	writer2 := os.Stdout
+	writer3, err := os.OpenFile("log.txt", os.O_WRONLY|os.O_CREATE, 0755)
+	if err != nil {
+		log.Fatalf("create file log.txt failed: %v", err)
+	}
+
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+	logrus.SetOutput(io.MultiWriter(writer2, writer3))
+	logrus.Info("=====开始执行shell脚本curl.sh=====")
 	execute()
 }
